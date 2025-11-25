@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reset Detox — Funil</title>
+<style>
+  :root{
+    --bg:#0b0f12;
+    --card:#0f1418;
+    --accent:#ff0000;
+    --accent-2:#000000;
+    --text:#e5e5e5;
+  }
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;}
+  .timer{position:fixed;top:0;left:0;width:100%;background:var(--accent);color:#fff;padding:14px 10px;text-align:center;font-weight:800;z-index:9999}
+  .timer span{display:block;font-size:20px;margin-top:4px}
+  .wrap{max-width:720px;margin:110px auto 60px;padding:18px;}
+  h1{color:var(--accent);text-align:center;margin:6px 0 14px;font-size:22px}
+  .card{background:var(--card);border-radius:12px;padding:16px;margin-bottom:16px;border:1px solid rgba(255,0,0,0.08)}
+  input[type="text"], input[type="email"]{
+    width:100%;padding:12px;border-radius:10px;border:1px solid #1b2326;background:#0d1216;color:var(--text);margin-top:8px;
+  }
+  .btn{
+    display:block;width:100%;padding:14px;border-radius:10px;border:none;font-weight:800;font-size:16px;cursor:pointer;margin-top:12px;
+  }
+  .btn-primary{background:var(--accent);color:var(--accent-2);border:2px solid rgba(0,0,0,0.2)}
+  .btn-secondary{background:var(--accent-2);color:var(--accent);border:2px solid var(--accent)}
+  .btn-small{display:inline-block;padding:10px 14px;border-radius:8px;font-weight:700}
+  .qa-item{border-radius:10px;background:#0b1114;padding:12px;margin-top:10px;border:1px solid rgba(255,0,0,0.06);cursor:pointer}
+  .qa-item h4{margin:0;color:#fff;font-size:15px}
+  .qa-answer{display:none;margin-top:8px;padding:10px;background:#0d1316;border-left:4px solid var(--accent);border-radius:8px;color:#ddd}
+  .chat{background:#081012;border-radius:10px;padding:12px;height:260px;overflow:auto;border:1px solid rgba(255,0,0,0.04)}
+  .msg{margin:8px 0;display:flex}
+  .msg.bot .b{background:#071012;padding:10px;border-radius:10px;border-left:4px solid var(--accent);max-width:78%}
+  .msg.user{justify-content:flex-end}
+  .msg.user .b{background:#070700;color:#d9ffd9;padding:10px;border-radius:10px;border-left:4px solid #00c373;max-width:78%}
+  .typing{color:#bbb;font-size:13px;margin-top:6px}
+  @media(min-width:900px){ .wrap{margin-top:140px} }
+</style>
+</head>
+<body>
+
+<div class="timer">
+OFERTA EXPIRA EM
+<span id="timer">03:00:00</span>
+</div>
+
+<div class="wrap">
+
+  <h1>RESET DETOX — LIBERAR MATERIAL GRÁTIS</h1>
+
+  <div class="card">
+    <strong>Preencha para receber</strong>
+    <input id="nome" type="text" placeholder="Nome completo">
+    <input id="email" type="email" placeholder="Seu e-mail">
+    <input id="wh" type="text" placeholder="Seu WhatsApp (DDD + número)">
+    <button id="btnReceive" class="btn btn-secondary">RECEBER MATERIAL GRÁTIS</button>
+  </div>
+
+  <div class="card">
+    <strong>Dúvidas rápidas</strong>
+    <div class="qa-item" data-id="a1"><h4>❓ O que é o Reset Detox?</h4>
+      <div id="a1" class="qa-answer">É um protocolo simples para acelerar queima de gordura sem dietas radicais.</div>
+    </div>
+    <div class="qa-item" data-id="a2"><h4>❓ Preciso fazer dieta difícil?</h4>
+      <div id="a2" class="qa-answer">Não. O foco é organização diária e passos práticos de alto impacto.</div>
+    </div>
+    <div class="qa-item" data-id="a3"><h4>❓ Quando vejo resultado?</h4>
+      <div id="a3" class="qa-answer">Muitos já percebem mudanças em 7–14 dias com aplicação correta.</div>
+    </div>
+    <div class="qa-item" data-id="a4"><h4>❓ Funciona se já tentei tudo?</h4>
+      <div id="a4" class="qa-answer">Sim. Ele foi pensado para quem não conseguiu progredir com outras abordagens.</div>
+    </div>
+    <div class="qa-item" data-id="a5"><h4>❓ Como compro o método completo?</h4>
+      <div id="a5" class="qa-answer">Para ver a oferta clique em SAIBA MAIS abaixo; para comprar clique em FINALIZAR COMPRA.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <strong>Fale com a IA</strong>
+    <div class="chat" id="chat">
+      <div class="msg bot"><div class="b">Olá! Clique em uma dúvida acima para receber a resposta.</div></div>
+    </div>
+    <div class="typing" id="typingLine" style="display:none">IA digitando...</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+    <button class="btn btn-primary" id="btnKnow">SAIBA MAIS</button>
+    <button class="btn btn-primary" id="btnBuy">FINALIZAR COMPRA</button>
+  </div>
+
+  <button class="btn btn-secondary" id="btnWhats" style="margin-top:12px">FALAR NO WHATSAPP</button>
+
+</div>
+
+<script>
+function speak(){
+  const msg = new SpeechSynthesisUtterance("Acesso liberado");
+  msg.lang = "pt-BR";
+  window.speechSynthesis.speak(msg);
+}
+
+let total=10800;
+function tick(){
+  let h = String(Math.floor(total/3600)).padStart(2,'0');
+  let m = String(Math.floor((total%3600)/60)).padStart(2,'0');
+  let s = String(total%60).padStart(2,'0');
+  document.getElementById('timer').textContent = h+":"+m+":"+s;
+  if(total>0) total--;
+}
+setInterval(tick,1000);
+tick();
+
+document.querySelectorAll('.qa-item').forEach(function(el){
+  el.addEventListener('click', function(){
+    const id = el.getAttribute('data-id');
+    const ans = document.getElementById(id);
+    document.querySelectorAll('.qa-answer').forEach(a=>{ if(a.id!==id) a.style.display='none' });
+    ans.style.display = ans.style.display==='block' ? 'none' : 'block';
+    chatAdd(el.querySelector('h4').innerText, 'user');
+    simulateReply(ans.innerText || "Veja abaixo.");
+  });
+});
+
+const chatEl = document.getElementById('chat');
+function chatAdd(text, who='bot'){
+  const div = document.createElement('div');
+  div.className = 'msg ' + (who==='user' ? 'user' : 'bot');
+  const b = document.createElement('div');
+  b.className = 'b';
+  b.innerHTML = text;
+  div.appendChild(b);
+  chatEl.appendChild(div);
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+function simulateReply(text){
+  document.getElementById('typingLine').style.display='block';
+  setTimeout(()=>{
+    document.getElementById('typingLine').style.display='none';
+    chatAdd(text, 'bot');
+  }, 750);
+}
+
+const LINK_KIWIFY = "https://kiwify.app/YznzknI?afid=0snvyzpx";
+const LINK_CHECKOUT = "https://pay.kiwify.com.br/8X6Xnds?afid=0snvyzpx";
+const WA_NUMBER = "5571986257247";
+
+document.getElementById('btnKnow').addEventListener('click', function(){
+  speak(); window.open(LINK_KIWIFY, '_blank');
+});
+document.getElementById('btnBuy').addEventListener('click', function(){
+  speak(); window.open(LINK_CHECKOUT, '_blank');
+});
+document.getElementById('btnWhats').addEventListener('click', function(){
+  speak(); window.open("https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent("Quero o Reset Detox"), '_blank');
+});
+
+document.getElementById('btnReceive').addEventListener('click', function(){
+  const nome = document.getElementById('nome').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const wh = document.getElementById('wh').value.trim();
+  if(!nome || !email || !wh){
+    alert('Preencha nome, e-mail e WhatsApp para receber o material.');
+    return;
+  }
+  const message = "QUERO O MATERIAL GRÁTIS";
+  speak(); window.open("https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(message), '_blank');
+});
+
+chatEl.scrollTop = chatEl.scrollHeight;
+</script>
+
+</body>
+</html>
